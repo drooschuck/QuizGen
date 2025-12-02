@@ -1,0 +1,5 @@
+{
+  "name": "QuizGen AI",
+  "description": "An intelligent, interactive quiz generator that transforms documents, text, and URLs into study materials using Gemini 2.5.",
+  "requestFramePermissions": []
+}
