@@ -149,12 +149,32 @@ export default function App() {
 
             {/* Mobile Menu Button */}
              <div className="md:hidden flex items-center">
-               <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg">
+               <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg focus:outline-none">
                  {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                </button>
              </div>
           </div>
         </div>
+        
+        {/* Mobile Menu Dropdown */}
+        {mobileMenuOpen && (
+           <div className="md:hidden bg-white border-t border-gray-100 px-4 py-4 space-y-4 shadow-lg absolute w-full z-40">
+             {state.view === 'quiz' && (
+               <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                  <span className="font-medium text-gray-600">Time Elapsed</span>
+                  <span className="font-mono font-bold text-brand-600">
+                    {Math.floor(timer / 60)}:{(timer % 60).toString().padStart(2, '0')}
+                  </span>
+               </div>
+             )}
+             <button 
+                onClick={() => { setState(prev => ({...prev, view: 'home'})); setMobileMenuOpen(false); }}
+                className="block w-full text-left font-medium text-gray-600 hover:text-brand-600 py-2"
+             >
+               Home
+             </button>
+           </div>
+        )}
       </nav>
 
       {/* Main Content */}

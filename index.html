@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QuizGen AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -80,9 +80,6 @@
       ::-webkit-scrollbar-thumb:hover {
         background: #94a3b8; 
       }
-      
-      /* Mobile optimization to prevent pull-to-refresh on custom gestures if needed */
-      overscroll-behavior-y: none;
     </style>
   <script type="importmap">
 {
@@ -99,5 +96,6 @@
 </head>
   <body>
     <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
   </body>
 </html>
