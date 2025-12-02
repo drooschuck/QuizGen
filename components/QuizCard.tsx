@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Question, QuestionType } from '../types';
 import { Button } from './Button';
-import { CheckCircle, XCircle, Volume2, HelpCircle } from 'lucide-react';
+import { CheckCircle2, XCircle, Volume2, HelpCircle, ArrowRight } from 'lucide-react';
 
 interface QuizCardProps {
   question: Question;
@@ -32,20 +32,22 @@ export const QuizCard: React.FC<QuizCardProps> = ({ question, currentAnswer, onA
       case QuestionType.MULTIPLE_CHOICE:
       case QuestionType.TRUE_FALSE:
         return (
-          <div className="grid gap-3">
-            {question.options?.map((option) => {
-              let btnClass = "border-2 border-gray-200 hover:border-brand-300 text-left p-4 rounded-xl transition-all";
+          <div className="grid gap-4">
+            {question.options?.map((option, index) => {
+              let btnClass = "relative group flex items-center p-5 rounded-2xl border-2 text-left transition-all duration-200 w-full";
               
               if (isReviewMode || isAnswered) {
                 if (option === question.correctAnswer) {
-                  btnClass = "border-green-500 bg-green-50 text-green-800";
+                  btnClass += " border-green-500 bg-green-50/50 text-green-900";
                 } else if (option === currentAnswer) {
-                  btnClass = "border-red-500 bg-red-50 text-red-800";
+                  btnClass += " border-red-500 bg-red-50/50 text-red-900";
                 } else {
-                  btnClass = "border-gray-100 text-gray-400";
+                  btnClass += " border-gray-100 text-gray-400 opacity-60";
                 }
               } else if (currentAnswer === option) {
-                 btnClass = "border-brand-500 bg-brand-50 ring-2 ring-brand-200";
+                 btnClass += " border-brand-500 bg-brand-50 text-brand-900 ring-2 ring-brand-200";
+              } else {
+                 btnClass += " border-gray-100 hover:border-brand-300 hover:bg-white hover:shadow-md bg-white";
               }
 
               return (
@@ -55,11 +57,17 @@ export const QuizCard: React.FC<QuizCardProps> = ({ question, currentAnswer, onA
                   disabled={isReviewMode || isAnswered}
                   className={btnClass}
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">{option}</span>
-                    {(isReviewMode || isAnswered) && option === question.correctAnswer && <CheckCircle size={20} className="text-green-600" />}
-                    {(isReviewMode || isAnswered) && option === currentAnswer && option !== question.correctAnswer && <XCircle size={20} className="text-red-600" />}
+                  <div className={`flex items-center justify-center w-8 h-8 rounded-full mr-4 text-sm font-bold border transition-colors ${
+                      (isReviewMode || isAnswered) && option === question.correctAnswer ? 'bg-green-500 border-green-500 text-white' :
+                      (isReviewMode || isAnswered) && option === currentAnswer ? 'bg-red-500 border-red-500 text-white' :
+                      'bg-gray-50 border-gray-200 text-gray-500 group-hover:border-brand-400 group-hover:text-brand-600'
+                  }`}>
+                    {String.fromCharCode(65 + index)}
                   </div>
+                  <span className="font-semibold text-lg flex-grow">{option}</span>
+                  
+                  {(isReviewMode || isAnswered) && option === question.correctAnswer && <CheckCircle2 className="text-green-600" size={24} />}
+                  {(isReviewMode || isAnswered) && option === currentAnswer && option !== question.correctAnswer && <XCircle className="text-red-600" size={24} />}
                 </button>
               );
             })}
@@ -69,24 +77,29 @@ export const QuizCard: React.FC<QuizCardProps> = ({ question, currentAnswer, onA
       case QuestionType.SHORT_ANSWER:
       case QuestionType.FILL_IN_THE_BLANK:
         return (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <input
               type="text"
               value={typedAnswer}
               onChange={(e) => setTypedAnswer(e.target.value)}
               disabled={isReviewMode || isAnswered}
               placeholder="Type your answer here..."
-              className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-brand-500 focus:ring-2 focus:ring-brand-200 outline-none transition-all"
+              className="w-full p-6 text-lg border-2 border-gray-200 rounded-2xl focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 outline-none transition-all bg-white"
             />
             {!isReviewMode && !isAnswered && (
-              <Button onClick={() => onAnswer(typedAnswer)} disabled={!typedAnswer.trim()}>
+              <Button onClick={() => onAnswer(typedAnswer)} disabled={!typedAnswer.trim()} fullWidth size="lg">
                 Submit Answer
               </Button>
             )}
             {(isReviewMode || isAnswered) && (
-              <div className={`p-4 rounded-lg ${isCorrect ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
-                <p className="font-bold mb-1">{isCorrect ? 'Correct!' : 'Incorrect'}</p>
-                {!isCorrect && <p>Correct Answer: <span className="font-semibold">{question.correctAnswer}</span></p>}
+              <div className={`p-6 rounded-2xl border ${isCorrect ? 'bg-green-50 border-green-100 text-green-900' : 'bg-red-50 border-red-100 text-red-900'}`}>
+                <div className="flex items-center gap-3 mb-2">
+                  {isCorrect ? <CheckCircle2 size={24} /> : <XCircle size={24} />}
+                  <h4 className="font-bold text-lg">{isCorrect ? 'Correct!' : 'Incorrect'}</h4>
+                </div>
+                {!isCorrect && (
+                   <p className="ml-9 text-red-800">The correct answer is: <span className="font-bold">{question.correctAnswer}</span></p>
+                )}
               </div>
             )}
           </div>
@@ -97,40 +110,52 @@ export const QuizCard: React.FC<QuizCardProps> = ({ question, currentAnswer, onA
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden w-full max-w-3xl mx-auto">
-      <div className="p-6 md:p-8">
-        <div className="flex justify-between items-start mb-6">
-          <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold tracking-wide bg-brand-100 text-brand-700 uppercase">
-            {question.type.replace(/_/g, ' ')}
-          </span>
-          <button onClick={handleSpeak} className="text-gray-400 hover:text-brand-600 transition-colors" title="Read Question">
-            <Volume2 size={20} />
-          </button>
-        </div>
-
-        <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-8 leading-snug">
-          {question.questionText}
-        </h3>
-
-        {renderInput()}
+    <div className="w-full max-w-3xl mx-auto">
+      <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/40 border border-white overflow-hidden relative">
+        {/* Decorative Top Bar */}
+        <div className="h-2 bg-gradient-to-r from-brand-400 via-brand-500 to-accent-500"></div>
         
-        {(isAnswered || isReviewMode) && (
-          <div className="mt-8 pt-6 border-t border-gray-100 animate-in fade-in slide-in-from-bottom-4 duration-500">
-             <button 
-                onClick={() => setShowExplanation(!showExplanation)}
-                className="flex items-center text-brand-600 font-medium hover:text-brand-800 mb-2"
-             >
-                <HelpCircle size={18} className="mr-2" />
-                {showExplanation ? "Hide Explanation" : "Show Explanation"}
-             </button>
-             {showExplanation && (
-               <div className="bg-blue-50 p-4 rounded-xl text-blue-900 text-sm leading-relaxed">
-                  <span className="font-semibold block mb-1">Explanation:</span>
-                  {question.explanation}
-               </div>
-             )}
+        <div className="p-6 md:p-10">
+          <div className="flex justify-between items-start mb-8">
+            <div className="flex items-center gap-3">
+               <span className="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold tracking-wide bg-brand-100 text-brand-700 uppercase">
+                  {question.type.replace(/_/g, ' ')}
+               </span>
+               <span className="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold tracking-wide bg-gray-100 text-gray-600 uppercase">
+                  {question.category}
+               </span>
+            </div>
+            
+            <button onClick={handleSpeak} className="p-2 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-full transition-all" title="Read Question">
+              <Volume2 size={22} />
+            </button>
           </div>
-        )}
+
+          <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-10 leading-snug">
+            {question.questionText}
+          </h3>
+
+          <div className="animate-fade-in">
+             {renderInput()}
+          </div>
+          
+          {(isAnswered || isReviewMode) && (
+            <div className="mt-8 pt-6 border-t border-gray-100 animate-slide-up">
+               <button 
+                  onClick={() => setShowExplanation(!showExplanation)}
+                  className="flex items-center text-brand-600 font-bold hover:text-brand-800 transition-colors"
+               >
+                  <HelpCircle size={20} className="mr-2" />
+                  {showExplanation ? "Hide Explanation" : "Why is this correct?"}
+               </button>
+               {showExplanation && (
+                 <div className="mt-4 bg-brand-50/50 p-6 rounded-2xl text-brand-900 border border-brand-100 text-base leading-relaxed">
+                    {question.explanation}
+                 </div>
+               )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
