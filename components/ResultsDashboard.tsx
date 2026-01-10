@@ -1,8 +1,10 @@
+
 import React from 'react';
 import { QuizSession } from '../types';
 import { Button } from './Button';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
-import { Share2, RotateCcw, Home, Award, TrendingUp, Clock } from 'lucide-react';
+import { Share2, RotateCcw, Home, Award, TrendingUp, Clock, Download } from 'lucide-react';
+import { downloadStandaloneQuiz } from '../services/quizExporter';
 
 interface ResultsDashboardProps {
   session: QuizSession;
@@ -49,6 +51,10 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({ session, onR
     } else {
       alert("Sharing not supported on this browser.");
     }
+  };
+
+  const handleDownload = () => {
+    downloadStandaloneQuiz(session);
   };
 
   return (
@@ -124,14 +130,17 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({ session, onR
             </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <div className="flex flex-wrap justify-center gap-4">
             <Button variant="outline" onClick={onHome} className="gap-2" size="lg">
                 <Home size={20} /> Home
             </Button>
             <Button variant="secondary" onClick={onRetry} className="gap-2" size="lg">
                 <RotateCcw size={20} /> Retry
             </Button>
-            <Button variant="primary" onClick={shareResult} className="gap-2" size="lg">
+            <Button variant="primary" onClick={handleDownload} className="gap-2 bg-slate-900 hover:bg-slate-800" size="lg">
+                <Download size={20} /> Download HTML
+            </Button>
+            <Button variant="outline" onClick={shareResult} className="gap-2" size="lg">
                 <Share2 size={20} /> Share
             </Button>
             </div>
