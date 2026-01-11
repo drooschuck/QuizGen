@@ -5,7 +5,8 @@ import { CreateQuizForm } from './components/CreateQuizForm';
 import { QuizCard } from './components/QuizCard';
 import { ResultsDashboard } from './components/ResultsDashboard';
 import { Button } from './components/Button';
-import { BrainCircuit, BookOpen, Clock, ChevronRight, Menu, X } from 'lucide-react';
+import { BrainCircuit, BookOpen, Clock, ChevronRight, Menu, X, Download } from 'lucide-react';
+import { downloadStandaloneQuiz } from './services/quizExporter';
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
@@ -118,6 +119,12 @@ export default function App() {
     setTimer(0);
   };
 
+  const handleDownloadActiveQuiz = () => {
+    if (state.currentQuiz) {
+      downloadStandaloneQuiz(state.currentQuiz);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col font-sans text-slate-800 bg-slate-50 selection:bg-brand-200">
       
@@ -203,8 +210,9 @@ export default function App() {
                 <h1 className="text-5xl md:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight">
                   Master any topic with <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-accent-600">AI Power</span>
                 </h1>
+                <h2 className="text-xl md:text-2xl font-bold text-slate-700 mt-4">Interactive Quiz Generator</h2>
                 <p className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed">
-                  Transform articles, notes, and docs into interactive quizzes instantly. Learning just got an upgrade.
+                  Transform documents, notes, websites, and YouTube content into interactive quizzes instantly.
                 </p>
               </div>
               
@@ -242,17 +250,28 @@ export default function App() {
 
           {state.view === 'quiz' && state.currentQuiz && (
             <div className="max-w-4xl mx-auto animate-fade-in">
-              <div className="mb-8">
-                 <div className="flex justify-between items-end mb-2 px-1">
-                    <span className="text-sm font-bold text-gray-500 uppercase tracking-wider">Question {currentQuestionIndex + 1}</span>
-                    <span className="text-sm font-bold text-brand-600">{Math.round(((currentQuestionIndex + 1) / state.currentQuiz.questions.length) * 100)}% Complete</span>
+              <div className="mb-8 flex flex-col md:flex-row gap-4 items-start md:items-end">
+                 <div className="flex-grow w-full">
+                    <div className="flex justify-between items-end mb-2 px-1">
+                        <span className="text-sm font-bold text-gray-500 uppercase tracking-wider">Question {currentQuestionIndex + 1}</span>
+                        <span className="text-sm font-bold text-brand-600">{Math.round(((currentQuestionIndex + 1) / state.currentQuiz.questions.length) * 100)}% Complete</span>
+                    </div>
+                    <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
+                        <div 
+                            className="h-full bg-gradient-to-r from-brand-500 to-accent-500 rounded-full transition-all duration-500 ease-out shadow-[0_0_10px_rgba(99,102,241,0.5)]"
+                            style={{ width: `${((currentQuestionIndex + 1) / state.currentQuiz.questions.length) * 100}%` }}
+                        ></div>
+                    </div>
                  </div>
-                 <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
-                    <div 
-                        className="h-full bg-gradient-to-r from-brand-500 to-accent-500 rounded-full transition-all duration-500 ease-out shadow-[0_0_10px_rgba(99,102,241,0.5)]"
-                        style={{ width: `${((currentQuestionIndex + 1) / state.currentQuiz.questions.length) * 100}%` }}
-                    ></div>
-                 </div>
+                 <Button 
+                    variant="outline" 
+                    size="md" 
+                    onClick={handleDownloadActiveQuiz}
+                    className="flex-shrink-0 gap-2 border-gray-200 text-gray-600 hover:text-brand-600 hover:border-brand-300"
+                 >
+                    <Download size={18} />
+                    <span className="hidden sm:inline">Download Standalone</span>
+                 </Button>
               </div>
 
               <QuizCard 
